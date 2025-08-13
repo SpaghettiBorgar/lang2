@@ -1,7 +1,6 @@
 use crate::lexer::*;
 use crate::token::*;
 
-use CharKind::*;
 use TokenKind::*;
 
 trait LiteralMatching {
@@ -11,12 +10,6 @@ trait LiteralMatching {
 impl LiteralMatching for char {
 	fn literal_match(self, c: char) -> bool {
 		c == self
-	}
-}
-
-impl LiteralMatching for String {
-	fn literal_match(self, c: char) -> bool {
-		self.contains(c)
 	}
 }
 
@@ -30,50 +23,31 @@ fn literal_match<T: LiteralMatching>(c: char, lit: T) -> bool {
 	<T as LiteralMatching>::literal_match(lit, c)
 }
 
-// ----- Expression Builder -----
 macro_rules! rule_expr {
-    // --- Operators (lowest priority first for correct matching) ---
-    // AND
+	($c:ident ($($inner:tt)+)) => {
+		(rule_expr!($c $($inner)+))
+	};
+
+	($c:ident not($($inner:tt)+)) => {
+		!(rule_expr!($c $($inner)+))
+	};
+
     ($c:ident $a:tt and $($b:tt)+) => {
         (rule_expr!($c $a) && rule_expr!($c $($b)+))
     };
 
-    // OR
     ($c:ident $a:tt or $($b:tt)+) => {
         (rule_expr!($c $a) || rule_expr!($c $($b)+))
     };
 
-    // NOT
-    ($c:ident not($($inner:tt)+)) => {
-        !(rule_expr!($c $($inner)+))
-    };
-
-    // Parentheses
-    ($c:ident ($($inner:tt)+)) => {
-        (rule_expr!($c $($inner)+))
-    };
-
-    // --- Base cases ---
-    // Fully qualified variant path
-    ($c:ident $p:path) => {
-        char_kind($c) == $p
-    };
-
-    // Bare variant (CharA, CharB, ...)
     ($c:ident $v:ident) => {
-        char_kind($c) == CharType::$v
+        char_kind($c) == CharKind::$v
     };
 
-	// ($c:ident $lit:literal) => {{
-		// 	$lit.contains($c)
-		// }};
-
-	// Char literal
 	($c:ident $lit:literal) => {{
 		literal_match($c, $lit)
 	}};
 
-    // Callable function or closure
     ($c:ident #$func:ident) => {
         $func($c)
     };
