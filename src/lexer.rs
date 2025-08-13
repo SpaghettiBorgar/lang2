@@ -1,6 +1,6 @@
 use std::cmp::min;
 
-use crate::lexing_rules::{MatchPattern, RULES};
+use crate::lexing_rules::{KEYWORDS, MatchPattern, RULES};
 use crate::token::{Token, TokenKind};
 
 #[derive(PartialEq, Debug)]
@@ -147,8 +147,13 @@ pub fn lex(text: &mut String) -> Vec<Token> {
 			}
 			buf.push(chars.next().unwrap());
 		};
+
 		tokens.push(Token {
-			kind: state.token_kind,
+			kind: if state.token_kind == TkIdent && KEYWORDS.iter().any(|e| buf == *e) {
+				TkKeyword
+			} else {
+				state.token_kind
+			},
 			val: buf,
 		});
 	}

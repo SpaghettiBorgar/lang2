@@ -76,7 +76,7 @@ pub struct PatternFrag {
 }
 pub type MatchPattern = [PatternFrag];
 
-pub const RULES: [(TokenKind, &MatchPattern); 6] = [
+pub const RULES: [(TokenKind, &MatchPattern); 5] = [
 	(
 		TkWhite,
 		&[make_frag!(0, ChWhite), make_frag!(1, not(ChWhite))],
@@ -84,15 +84,6 @@ pub const RULES: [(TokenKind, &MatchPattern); 6] = [
 	(
 		TkNum,
 		&[make_frag!(0, (ChNum)), make_frag!(1, not(ChNum or ChAlpha))],
-	),
-	(
-		TkKeyword,
-		&[
-			make_frag!(1, 'l'),
-			make_frag!(1, 'e'),
-			make_frag!(1, 't'),
-			make_frag!(1, not(ChAlpha or ChNum)),
-		],
 	),
 	(
 		TkIdent,
