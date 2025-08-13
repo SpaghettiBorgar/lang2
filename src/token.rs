@@ -1,6 +1,6 @@
 use std::fmt::{self};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum TokenKind {
 	TkWhite,
 	TkIdent,

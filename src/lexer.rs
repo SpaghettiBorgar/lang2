@@ -50,7 +50,7 @@ impl MatchState {
 	fn new(token_kind: TokenKind, pattern: &'static MatchPattern) -> Self {
 		Self {
 			token_kind: token_kind,
-			pattern: &pattern,
+			pattern: pattern,
 			frag: 0,
 			flag: StInit,
 			quant: i8::MAX,
@@ -136,7 +136,7 @@ pub fn lex(text: &mut String) -> Vec<Token> {
 					}
 				}
 			} else {
-				if !(buf.is_empty() || buf.bytes().nth(0) == Some(b'\0')) {
+				if !(buf.is_empty() || *buf.as_bytes().get(0).unwrap() == 0) {
 					panic!("non-empty buffer at EOF");
 				}
 				tokens.push(Token {
@@ -152,14 +152,14 @@ pub fn lex(text: &mut String) -> Vec<Token> {
 			val: buf,
 		});
 	}
-	return tokens;
+	tokens
 }
 
 pub fn _lex(text: &str) -> Vec<Token> {
 	let mut tokens = Vec::new();
 	let mut chars = text.chars().peekable();
 	while chars.peek().is_some() {
-		let mut c = chars.peek().unwrap().clone();
+		let mut c = *chars.peek().unwrap();
 		let c_kind = char_kind(c);
 		let mut buf = String::new();
 		match c_kind {
@@ -203,7 +203,7 @@ pub fn _lex(text: &str) -> Vec<Token> {
 				});
 			}
 			ChOther | ChNull => {
-				panic!("Unknown Character '{}'", c);
+				panic!("Unknown Character '{c}'");
 			}
 		};
 	}
