@@ -29,18 +29,13 @@ use TokenKind::*;
 
 #[inline]
 pub fn char_kind(c: char) -> CharKind {
-	if c.is_whitespace() {
-		ChWhite
-	} else if c.is_alphabetic() {
-		ChAlpha
-	} else if c.is_digit(10) {
-		ChNum
-	} else if "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~".contains(c) {
-		ChSpecial
-	} else if c == '\0' {
-		ChNull
-	} else {
-		ChOther
+	match c {
+		c if c.is_whitespace() => ChWhite,
+		c if c.is_alphabetic() => ChAlpha,
+		c if c.is_digit(10) => ChNum,
+		c if "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~".contains(c) => ChSpecial,
+		'\0' => ChNull,
+		_ => ChOther,
 	}
 }
 struct MatchState {
